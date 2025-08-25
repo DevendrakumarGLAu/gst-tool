@@ -1,0 +1,16 @@
+<header class="public-header bg-light border-bottom py-3">
+  <div class="container d-flex justify-content-between align-items-center">
+    <a class="navbar-brand fw-bold" routerLink="/">GST Tool</a>
+
+    <nav>
+      <a [routerLink]="['/auth/login']"  routerLinkActive="active" class="me-3 text-decoration-none">Login</a>
+      <a [routerLink]="['/auth/signup']" routerLinkActive="active" class="text-decoration-none">Register</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container m-4">
+  <router-outlet></router-outlet>
+</main>
+
+<app-footer></app-footer>

@@ -1,31 +1,61 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './common/login/login.component';
-import { SignupComponent } from './common/signup/signup.component';
 import { MainLayerComponent } from './main-layer/main-layer.component';
+import { PubliclayoutComponent } from './publiclayout/publiclayout.component';
+import { HomeComponent } from './common/home/home.component';
 
 export const routes: Routes = [
-  // Auth Routes (no layout)
-  {
-    path: 'auth',
-    children: [
-      { path: 'login', component: LoginComponent },
-      { path: 'signup', component: SignupComponent }
-    ]
-  },
-
-  // Main app routes with layout
+  // Public Layout (No auth required)
   {
     path: '',
-    component: MainLayerComponent,
+    component: PubliclayoutComponent,
     children: [
-      // You can define your main child routes here:
-      // { path: 'dashboard', component: DashboardComponent },
-      // { path: 'settings', component: SettingsComponent },
-      { path: '', redirectTo: 'home', pathMatch: 'full' },  // Default child
-      { path: 'home', loadComponent: () => import('./common/home/home.component').then(m => m.HomeComponent) }
-    ]
+      { path: '', component: HomeComponent },
+      {
+        path: 'auth/login',
+        loadComponent: () =>
+          import('./common/login/login.component').then(m => m.LoginComponent),
+      },
+      {
+        path: 'auth/signup',
+        loadComponent: () =>
+          import('./common/signup/signup.component').then(m => m.SignupComponent),
+      },
+    ],
   },
 
-  // Catch-all redirect
-  { path: '**', redirectTo: '' }
+  // Authenticated Layout (with header/footer)
+  {
+    path: 'main',
+    component: MainLayerComponent,
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
+      },
+    //   {
+    //     path: 'tools',
+    //     loadComponent: () =>
+    //       import('./tools/tools.component').then(m => m.ToolsComponent),
+    //   },
+    //   {
+    //     path: 'screenshot',
+    //     loadComponent: () =>
+    //       import('./screenshot/screenshot.component').then(m => m.ScreenshotComponent),
+    //   },
+    //   {
+    //     path: 'support',
+    //     loadComponent: () =>
+    //       import('./support/support.component').then(m => m.SupportComponent),
+    //   },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
+    ],
+  },
+
+  // Wildcard route
+  { path: '**', redirectTo: '' },
 ];

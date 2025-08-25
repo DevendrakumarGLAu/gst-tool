@@ -3,11 +3,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router'; // import Router at the top
 import { CommonService } from '../../common.service';
 import { NgIf } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
   standalone:true,
-  imports:[NgIf,ReactiveFormsModule],
+  imports:[NgIf,ReactiveFormsModule, HttpClientModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
@@ -34,10 +35,11 @@ export class LoginComponent {
         const role = response.role;
         switch (role) {
           case 'admin':
-            this.router.navigate(['/admin/dashboard']);
+            this.router.navigate(['main/dashboard']);
             break;
-          case 'teacher':
-            this.router.navigate(['/teacher/dashboard']);
+          case 'normal':
+            this.router.navigate(['/main/dashboard']);
+            // this.router.navigate(['/teacher/dashboard']);
             break;
           case 'student':
             this.router.navigate(['/student/dashboard']);
