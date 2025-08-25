@@ -33,11 +33,17 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./dashboard/dashboard.component').then(m => m.DashboardComponent),
       },
+      
     //   {
     //     path: 'tools',
     //     loadComponent: () =>
     //       import('./tools/tools.component').then(m => m.ToolsComponent),
     //   },
+      {
+      path: 'tools/gst-tool',
+      loadComponent: () =>
+        import('./tools/gst-tool/gst-tool.component').then(m => m.GstToolComponent),
+    },
     //   {
     //     path: 'screenshot',
     //     loadComponent: () =>
