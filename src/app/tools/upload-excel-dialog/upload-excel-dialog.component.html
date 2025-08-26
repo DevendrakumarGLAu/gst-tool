@@ -1,0 +1,39 @@
+<div class="container">
+    <div class="row">
+        <form [formGroup]="excelForm" (ngSubmit)="onSubmit()"
+            class="container mt-5 border p-4 shadow-sm bg-light rounded">
+            <h3 class="mb-4">Upload Excel Files</h3>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon3">tcs_sales_return.xlsx</span>
+                </div>
+                <input type="file" class="form-control" (change)="onFileChange($event, 'tcs_sales_return')"
+                    accept=".xls,.xlsx" id="basic-url" aria-describedby="basic-addon3" required>
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon3">tcs_sales.xlsx</span>
+                </div>
+                <input type="file" id="tcs_sales" class="form-control" (change)="onFileChange($event, 'tcs_sales')"
+                    accept=".xls,.xlsx" aria-describedby="basic-addon3" required />
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon3">Tax_invoice_details.xlsx</span>
+                </div>
+                <input type="file" id="tax_invoice_details" class="form-control"
+                    (change)="onFileChange($event, 'tax_invoice_details')" accept=".xls,.xlsx"
+                    aria-describedby="basic-addon3" required />
+            </div>
+
+            <div class="col-12 d-flex justify-content-end float-right">
+                <button type="submit" class="btn btn-primary" [disabled]="!excelForm.valid">
+                    Upload Files
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

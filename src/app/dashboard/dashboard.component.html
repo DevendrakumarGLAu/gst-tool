@@ -5,9 +5,13 @@
                 <div class="card-body">
                     <h5 class="card-title">Meesho</h5>
                     <p class="card-text">Details about Meesho integration or analytics.</p>
-                    <button class="btn btn-primary float-right" [routerLink]="['/main/tools/gst-tool']">
-                        Access Now
-                    </button>
+                    <div class="d-flex justify-content-end">
+                        <button class="btn btn-primary "
+                            (click)="openPlatformModal()">
+                            Access Now
+                        </button>
+                         <!-- [routerLink]="['/main/tools/gst-tool']" -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -29,5 +33,18 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+
+<div class=" modal-backdrop" *ngIf="showModal">
+    <div class="modal-content p-4 rounded shadow">
+        <h5>Select a Platform</h5>
+        <div class="d-flex flex-column gap-2 mt-3">
+            <button class="btn btn-outline-primary" (click)="selectPlatform('meesho')">Meesho</button>
+            <button class="btn btn-outline-primary" (click)="selectPlatform('amazon')">Amazon</button>
+            <button class="btn btn-outline-primary" (click)="selectPlatform('flipkart')">Flipkart</button>
+        </div>
+        <button class="btn btn-sm btn-secondary mt-4" (click)="closePlatformModal()">Cancel</button>
     </div>
 </div>
