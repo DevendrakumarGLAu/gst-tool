@@ -7,67 +7,97 @@
         </div>
         <div class="col-md-8">
             <form [formGroup]="gstForm" (ngSubmit)="onSubmit()" class="card p-4 shadow-sm">
-        <h4 class="mb-3">GST Filing Tool</h4>
+                <h4 class="mb-3">GST Filing Tool</h4>
 
-        <!-- GST Number Input -->
-        <div class="mb-3">
-            <label for="gstNumber" class="form-label">GST Number</label>
-            <input type="text" class="form-control" id="gstNumber" formControlName="gstNumber"
-                placeholder="Enter GST number" />
-            <small class="text-danger" *ngIf="gstForm.get('gstNumber')?.invalid && gstForm.get('gstNumber')?.touched">
-                Please enter a valid GST number.
-            </small>
-        </div>
+                <!-- GST Number Input -->
+                <div class="mb-3">
+                    <label for="gstNumber" class="form-label">GST Number</label>
+                    <input type="text" class="form-control" id="gstNumber" formControlName="gstNumber"
+                        placeholder="Enter GST number" />
+                    <small class="text-danger"
+                        *ngIf="gstForm.get('gstNumber')?.invalid && gstForm.get('gstNumber')?.touched">
+                        Please enter a valid GST number.
+                    </small>
+                </div>
 
-        <!-- Filing Frequency (Radio) -->
-        <div class="mb-3">
-            <label class="form-label">Filing Frequency</label>
-            <div>
-                <label class="form-check form-check-inline">
-                    <input type="radio" class="form-check-input" formControlName="filingFrequency" value="monthly" />
-                    Monthly
-                </label>
-                <label class="form-check form-check-inline">
-                    <input type="radio" class="form-check-input" formControlName="filingFrequency" value="quarterly" />
-                    Quarterly
-                </label>
+                <!-- Filing Frequency (Radio) -->
+                <div class="mb-3">
+                    <label class="form-label">Filing Frequency</label>
+                    <div>
+                        <label class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" formControlName="filingFrequency"
+                                value="monthly" />
+                            Monthly
+                        </label>
+                        <label class="form-check form-check-inline">
+                            <input type="radio" class="form-check-input" formControlName="filingFrequency"
+                                value="quarterly" />
+                            Quarterly
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Month Dropdown -->
+                <div class="mb-3" *ngIf="filingFrequency === 'monthly'">
+                    <label class="form-label">Select Month</label>
+                    <select class="form-select" formControlName="month">
+                        <option value="">-- Select Month --</option>
+                        <option *ngFor="let month of months" [value]="month.key">
+                            {{ month.name }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Quarter Dropdown -->
+                <div class="mb-3" *ngIf="filingFrequency === 'quarterly'">
+                    <label class="form-label">Select Quarter</label>
+                    <select class="form-select" formControlName="quarter">
+                        <option value="">-- Select Quarter --</option>
+                        <option *ngFor="let q of quarters" [value]="q">{{ q }}</option>
+                    </select>
+                </div>
+
+                <!-- Year Dropdown -->
+                <div class="mb-3">
+                    <label class="form-label">Select Year</label>
+                    <select class="form-select" formControlName="year">
+                        <option value="">-- Select Year --</option>
+                        <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+                    </select>
+                </div>
+
+                <button class="btn btn-primary" type="submit" [disabled]="gstForm.invalid">
+                    Submit
+                </button>
+            </form>
+            <div class="col-md-12">
+                <div *ngIf="stateData" class="card mt-4 p-3 shadow-sm">
+                    <h5 class="card-title">GST Filing Summary</h5>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>GSTIN:</strong> {{ stateData.gstin }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>
+                                    <strong>Filing Frequency:</strong> {{ stateData.filling_frequency | titlecase }}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>State:</strong> ({{ stateData.state_code }})-{{ stateData.state_name }}
+                                    <strong>Period:</strong> {{ stateData.month }}-{{ stateData.year }}
+                                </p>
+                            </div>
+                            <div class="col-md-12 d-flex justify-content-end">
+                                <button type="button" class="btn btn-primary" (click)="openImportDialog()" >Import Data</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Month Dropdown -->
-        <div class="mb-3" *ngIf="filingFrequency === 'monthly'">
-            <label class="form-label">Select Month</label>
-            <select class="form-select" formControlName="month">
-                <option value="">-- Select Month --</option>
-                <option *ngFor="let month of months" [value]="month.key">
-                    {{ month.name }}
-                </option>
-            </select>
-        </div>
-
-        <!-- Quarter Dropdown -->
-        <div class="mb-3" *ngIf="filingFrequency === 'quarterly'">
-            <label class="form-label">Select Quarter</label>
-            <select class="form-select" formControlName="quarter">
-                <option value="">-- Select Quarter --</option>
-                <option *ngFor="let q of quarters" [value]="q">{{ q }}</option>
-            </select>
-        </div>
-
-        <!-- Year Dropdown -->
-        <div class="mb-3">
-            <label class="form-label">Select Year</label>
-            <select class="form-select" formControlName="year">
-                <option value="">-- Select Year --</option>
-                <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-            </select>
-        </div>
-
-        <button class="btn btn-primary" type="submit" [disabled]="gstForm.invalid">
-            Submit
-        </button>
-    </form>
-        </div>
     </div>
-    
+
+
 </div>

@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { UploadExcelDialogComponent } from '../upload-excel-dialog/upload-excel-dialog.component';
+import { CommonService } from '../../common.service';
 
 @Component({
   selector: 'app-gst-tool',
@@ -13,6 +14,7 @@ import { UploadExcelDialogComponent } from '../upload-excel-dialog/upload-excel-
 })
 export class GstToolComponent {
   gstForm: FormGroup;
+  stateData: any = null;
 
   months = [
     { key: '01', name: 'January' },
@@ -33,7 +35,7 @@ export class GstToolComponent {
 
   years: number[] = [];
 
-  constructor(private fb: FormBuilder, private dialog: MatDialog) {
+  constructor(private fb: FormBuilder, private dialog: MatDialog, private commonService: CommonService) {
     this.gstForm = this.fb.group({
       gstNumber: ['', [Validators.required, Validators.pattern(/^\d{2}[A-Z]{5}\d{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/)]],
       filingFrequency: ['monthly', Validators.required],
@@ -50,15 +52,33 @@ export class GstToolComponent {
     return this.gstForm.get('filingFrequency')?.value;
   }
 
+  formValues:any;
   onSubmit() {
     if (this.gstForm.valid) {
-      const formValues = this.gstForm.value;
+      this.formValues = this.gstForm.value;
       console.log(this.gstForm.value);
-      this.dialog.open(UploadExcelDialogComponent, {
-        data: formValues,
-        width: '600px' // ✅ Fix: use quotes
-      });
-      // Handle form submission
+      this.commonService.stateName(this.formValues).subscribe((data: any) => {
+        this.stateData = data
+        console.log("state data", this.stateData)
+      })
+      // this.dialog.open(UploadExcelDialogComponent, {
+      //   data: formValues,
+      //   width: '600px' // ✅ Fix: use quotes
+      // });
     }
+  }
+  openImportDialog(){
+    const dialogData = {...this.formValues,...this.stateData}
+    this.dialog.open(UploadExcelDialogComponent, {
+    data: dialogData,
+    width: '600px'
+  });
+  this.dialog.afterClosed().subscribe((success) => {
+    if (success) {
+      alert('Import completed successfully!');
+      // Optionally refresh data or call API again
+      // this.onSubmit();
+    }
+  });
   }
 }

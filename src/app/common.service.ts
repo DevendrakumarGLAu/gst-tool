@@ -32,4 +32,11 @@ export class CommonService {
       responseType: 'blob' as 'json'
     });
   }
+
+  stateName(data:any):Observable<any>{
+    return this.http.post(`${this.baseUrl}/gst/get-state`, data)
+  }
+  getGSTJson(formData: FormData) {
+  return this.http.post('/api/get-gst-json', formData);
+}
 }
