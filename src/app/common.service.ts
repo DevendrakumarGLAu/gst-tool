@@ -27,16 +27,21 @@ export class CommonService {
     return this.http.put(`/api/students/${id}`, data); // adjust endpoint as needed
   }
 
+  // uploadExcelFiles(formData: FormData): Observable<any> {
+  //   return this.http.post(`${this.baseUrl}/gst/upload-excels`, formData,{
+  //     responseType: 'blob' as 'json'
+  //   });
+  // }
   uploadExcelFiles(formData: FormData): Observable<any> {
-    return this.http.post(`${this.baseUrl}/gst/upload-excels`, formData,{
-      responseType: 'blob' as 'json'
-    });
-  }
+  return this.http.post<any>(`${this.baseUrl}/gst/upload-excels`, formData, {
+    responseType: 'json'
+  });
+}
 
   stateName(data:any):Observable<any>{
     return this.http.post(`${this.baseUrl}/gst/get-state`, data)
   }
-  getGSTJson(formData: FormData) {
-  return this.http.post('/api/get-gst-json', formData);
-}
+//   getGSTJson(formData: FormData) {
+//   return this.http.post('/gst/get-gst-json', formData);
+// }
 }

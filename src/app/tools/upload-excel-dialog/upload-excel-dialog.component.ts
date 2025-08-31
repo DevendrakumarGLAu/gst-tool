@@ -114,62 +114,39 @@ export class UploadExcelDialogComponent {
   //   }
   // }
   onSubmit() {
-  if (this.excelForm.valid) {
-    const formData = new FormData();
+    if (this.excelForm.valid) {
+      const formData = new FormData();
 
-    Object.entries(this.files).forEach(([key, file]) => {
-      if (file) formData.append(key, file);
-    });
+      Object.entries(this.files).forEach(([key, file]) => {
+        if (file) formData.append(key, file);
+      });
 
-    formData.append('gst_number', this.data.gstNumber);
-    formData.append('filing_frequency', this.data.filingFrequency);
-    formData.append('month', this.data.month || '');
-    formData.append('year', this.data.year || '');
+      formData.append('gst_number', this.data.gstNumber);
+      formData.append('filing_frequency', this.data.filingFrequency);
+      formData.append('month', this.data.month || '');
+      formData.append('year', this.data.year || '');
 
-    // First download the Excel file
-    this.commonService.uploadExcelFiles(formData).subscribe({
-      next: (excelBlob: Blob) => {
-        const excel = new Blob([excelBlob], {
-          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        });
-        const excelUrl = window.URL.createObjectURL(excel);
-        const excelAnchor = document.createElement('a');
-        excelAnchor.href = excelUrl;
-        excelAnchor.download = 'tax_document_summary.xlsx';
-        excelAnchor.click();
-        window.URL.revokeObjectURL(excelUrl);
-
-        // ✅ Then request the JSON
-        this.commonService.getGSTJson(formData).subscribe({
-          next: (jsonData: any) => {
-            const jsonBlob = new Blob([JSON.stringify(jsonData, null, 2)], {
-              type: 'application/json'
-            });
-            const jsonUrl = window.URL.createObjectURL(jsonBlob);
-            const jsonAnchor = document.createElement('a');
-            jsonAnchor.href = jsonUrl;
-            jsonAnchor.download = 'gst_data.json';
-            jsonAnchor.click();
-            window.URL.revokeObjectURL(jsonUrl);
-
-            alert('Both Excel and JSON downloaded successfully!');
-            this.dialogRef.close(true);  // Notify parent
-          },
-          error: () => {
-            alert('Failed to download JSON.');
-            this.dialogRef.close(false);
-          }
+      this.commonService.uploadExcelFiles(formData).subscribe({
+      next: (res: any) => {
+        console.log("Received API response in dialog:", res);
+        this.dialogRef.close({
+          success: true,
+          jsonData: res?.jsonData,
+          excelBase64: res?.excelBase64
         });
       },
-      error: () => {
-        alert('Failed to download Excel file.');
-        this.dialogRef.close(false);
+      error: (err) => {
+        alert('Upload failed.');
+        console.error(err);
+        this.dialogRef.close({ success: false });
       }
     });
-  }
-}
 
-  close(){
+    }
+  }
+
+
+  close() {
     this.dialogRef.close();
   }
 }

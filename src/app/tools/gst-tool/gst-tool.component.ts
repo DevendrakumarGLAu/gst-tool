@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
@@ -12,9 +12,11 @@ import { CommonService } from '../../common.service';
   templateUrl: './gst-tool.component.html',
   styleUrls: ['./gst-tool.component.scss']
 })
-export class GstToolComponent {
+export class GstToolComponent implements OnInit {
   gstForm: FormGroup;
   stateData: any = null;
+  downloadReady = false;
+  formDataForDownload!: FormData;
 
   months = [
     { key: '01', name: 'January' },
@@ -48,37 +50,88 @@ export class GstToolComponent {
     this.years = Array.from({ length: 5 }, (_, i) => currentYear - i);
   }
 
+  ngOnInit() {
+  const savedForm = localStorage?.getItem('gstFormData');
+  if (savedForm) {
+    this.gstForm.patchValue(JSON.parse(savedForm));
+  }
+}
+
   get filingFrequency() {
     return this.gstForm.get('filingFrequency')?.value;
   }
-
-  formValues:any;
+  uploadedJsonData: any = null;
+  uploadedExcelBase64: string = '';
+  formValues: any;
   onSubmit() {
     if (this.gstForm.valid) {
       this.formValues = this.gstForm.value;
-      console.log(this.gstForm.value);
+      // console.log(this.gstForm.value);
+      localStorage.setItem('gstFormData', JSON.stringify(this.formValues));
+
       this.commonService.stateName(this.formValues).subscribe((data: any) => {
         this.stateData = data
-        console.log("state data", this.stateData)
       })
-      // this.dialog.open(UploadExcelDialogComponent, {
-      //   data: formValues,
-      //   width: '600px' // ✅ Fix: use quotes
-      // });
     }
   }
-  openImportDialog(){
-    const dialogData = {...this.formValues,...this.stateData}
-    this.dialog.open(UploadExcelDialogComponent, {
-    data: dialogData,
-    width: '600px'
-  });
-  this.dialog.afterClosed().subscribe((success) => {
-    if (success) {
-      alert('Import completed successfully!');
-      // Optionally refresh data or call API again
-      // this.onSubmit();
+
+
+  openImportDialog() {
+    const dialogData = { ...this.formValues, ...this.stateData };
+    const dialogRef = this.dialog.open(UploadExcelDialogComponent, {
+      data: dialogData,
+      width: '600px'
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result?.success) {
+        console.log('Dialog result:', result);
+        this.uploadedJsonData = result.jsonData;
+        this.uploadedExcelBase64 = result.excelBase64;
+        this.downloadReady = true;
+        alert('Files processed. Click to download.');
+      } else {
+        alert('Something went wrong.');
+      }
+    });
+  }
+
+  downloadJson() {
+    const blob = new Blob([JSON.stringify(this.uploadedJsonData, null, 2)], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'gst_data.json';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }
+
+  downloadExcel() {
+    try {
+      // Clean the base64 string: remove prefix & whitespace
+      let base64String = this.uploadedExcelBase64;
+      if (base64String.startsWith('data:')) {
+        base64String = base64String.split(',')[1];
+      }
+      base64String = base64String.replace(/\s/g, '');
+
+      const byteCharacters = atob(base64String);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'tax_document_summary.xlsx';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error decoding base64 or downloading file:', error);
     }
-  });
   }
 }
